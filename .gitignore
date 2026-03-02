@@ -28,7 +28,7 @@ ENV/
 *.sqlite3
 
 # Vector Storage
-vector_storage/
+#vector_storage/
 
 # Environment
 .env
