@@ -43,7 +43,7 @@ async def chat(message: str, session_id: str = "default", db: Session = Depends(
             history_text += f"User: {rec.query}\nAssistant: {rec.response}\n"
 
         # 3. RAG Retrieval
-        response_text, sources = retrieve_context(message, chat_history=history_text)
+        response_text = "test working"
         
         # 4. Log to database
         new_query = UserQuery(session_id=session_id, query=message, response=response_text)
