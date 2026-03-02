@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Admission Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a365d;
+            --secondary: #2b6cb0;
+            --accent: #ebf8ff;
+            --text: #2d3748;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text);
+            background: #f7fafc;
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 600;
+        }
+
+        .hero {
+            padding: 80px 5%;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            padding: 50px 5%;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        /* Chat Widget Styles */
+        #chat-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateY(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        #chat-widget.active {
+            transform: translateY(0);
+        }
+
+        #chat-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            padding: 8px 12px;
+            border-radius: 15px;
+            max-width: 80%;
+            font-size: 0.9rem;
+        }
+
+        .user {
+            align-self: flex-end;
+            background: var(--secondary);
+            color: white;
+        }
+
+        .bot {
+            align-self: flex-start;
+            background: var(--accent);
+            color: var(--text);
+        }
+
+        #chat-input-area {
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            gap: 5px;
+        }
+
+        #chat-input {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 8px 15px;
+            outline: none;
+        }
+
+        #send-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+        }
+
+        #toggle-chat {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">EduPortal</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="programs.html">Programs</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Your Future Begins Here</h1>
+        <p>Explore world-class programs and start your journey today.</p>
+    </section>
+
+    <div class="container">
+        <h2>Admissions are Open for 2026!</h2>
+        <p>Our university offers a diverse range of undergraduate and postgraduate programs designed to foster
+            innovation and leadership. Use our AI assistant to learn more about eligibility, deadlines, and application
+            processes.</p>
+
+        <div style="margin-top: 40px;">
+            <h3>Our Mission and Vision</h3>
+            <p><strong>Mission:</strong> To empower students with cutting-edge knowledge and practical skills that drive
+                global progress.</p>
+            <p><strong>Vision:</strong> to be a world-class institution recognized for research excellence and diverse
+                student success.</p>
+        </div>
+
+        <div style="margin-top: 40px;">
+            <h3>Campus Life</h3>
+            <p>Our 50-acre green campus includes 10 residential halls, a state-of-the-art sports complex, and 24/7
+                library access. We host over 50 student clubs ranging from Robotics to Classical Music, ensuring a
+                vibrant holistic environment.</p>
+        </div>
+    </div>
+
+    <button id="toggle-chat">💬</button>
+
+    <div id="chat-widget">
+        <div id="chat-header">
+            <span>Admission Assistant</span>
+            <button id="close-chat" style="background:none; border:none; color:white; cursor:pointer;">✕</button>
+        </div>
+        <div id="chat-messages">
+            <div class="message bot">Hello! I am your University Admission Assistant. How can I help you today?</div>
+        </div>
+        <div id="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Ask about programs, status...">
+            <button id="send-btn">➔</button>
+        </div>
+    </div>
+
+    <script>
+        const chatWidget = document.getElementById('chat-widget');
+        const toggleBtn = document.getElementById('toggle-chat');
+        const closeBtn = document.getElementById('close-chat');
+        const btnSend = document.getElementById('send-btn');
+        const input = document.getElementById('chat-input');
+        const messages = document.getElementById('chat-messages');
+
+        let currentSessionId = null; // This will store the Application ID
+
+        toggleBtn.onclick = () => { chatWidget.classList.toggle('active'); toggleBtn.style.display = 'none'; };
+        closeBtn.onclick = () => { chatWidget.classList.remove('active'); toggleBtn.style.display = 'block'; };
+
+        function initChat() {
+            messages.innerHTML = '';
+            addMessage('Welcome! Please enter your Application ID to begin our conversation.', 'bot');
+            currentSessionId = null;
+        }
+
+        async function sendMessage() {
+            const text = input.value.trim();
+            if (!text) return;
+
+            addMessage(text, 'user');
+            input.value = '';
+
+            // Handle "exit" keyword
+            if (text.toLowerCase() === 'exit') {
+                initChat();
+                return;
+            }
+
+            // Step 1: Validate ID if not set
+            if (!currentSessionId) {
+                try {
+                    const res = await fetch(`/api/status/${text}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        currentSessionId = text;
+                        addMessage(`Welcome back, ${data.applicant_name}! I have retrieved your previous conversation. How can I help you today?`, 'bot');
+                        fetchHistory(currentSessionId);
+                    } else {
+                        addMessage('I couldn\'t find that Application ID. Please enter a valid ID (e.g., A1001).', 'bot');
+                    }
+                } catch (err) {
+                    addMessage('Error validating ID. Please try again.', 'bot');
+                }
+                return;
+            }
+
+            // Step 2: Regular Chat
+            try {
+                const response = await fetch(`/api/chat?message=${encodeURIComponent(text)}&session_id=${currentSessionId}`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                addMessage(data.response, 'bot');
+            } catch (error) {
+                addMessage('Sorry, I am having trouble connecting to the server.', 'bot');
+            }
+        }
+
+        async function fetchHistory(sessionId) {
+            try {
+                const res = await fetch(`/api/chat/history/${sessionId}`);
+                const history = await res.json();
+                // Clear existing messages (except the welcome one)
+                const currentMsgs = messages.querySelectorAll('.message');
+                currentMsgs.forEach(m => m.remove());
+
+                addMessage(`Logged in as: ${sessionId}`, 'bot');
+
+                history.forEach(log => {
+                    addMessage(log.query, 'user');
+                    addMessage(log.response, 'bot');
+                });
+            } catch (err) {
+                console.error('Error fetching history', err);
+            }
+        }
+
+        function addMessage(text, side) {
+            const div = document.createElement('div');
+            div.className = side === 'user' ? 'message user' : 'message bot';
+            div.textContent = text;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        btnSend.onclick = sendMessage;
+        input.onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
+
+        // Initial prompt
+        initChat();
+    </script>
+</body>
+
+</html>
