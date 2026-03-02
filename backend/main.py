@@ -27,3 +27,5 @@ async def read_html(page: str):
     if os.path.exists(path):
         return FileResponse(path)
     return {"error": "Page not found"}
+    
+port = int(os.environ.get("PORT", 8000))
