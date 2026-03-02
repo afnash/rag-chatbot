@@ -1,51 +1,88 @@
-# University Admission Portal RAG Chatbot
+# 🎓 University Admission Assistant (RAG Chatbot)
 
-This project is a production-ready AI-driven chatbot integrated into a University Admission Portal. It leverages Retrieval-Augmented Generation (RAG) and structured database integration to provide accurate, grounded responses.
+Welcome to the **University Admission Assistant**! This is an AI-powered portal designed to help prospective students learn about university programs, tuition fees, and check their application status using a modern RAG (Retrieval-Augmented Generation) pipeline.
 
-## Architecture
+---
 
-The system follows a modular backend architecture using **FastAPI** and **PostgreSQL**. 
-- **RAG Pipeline**: Built with LangChain, FAISS, and Gemini 1.5 Flash. Documents (PDF/CSV) are ingested, chunked, and stored as embeddings.
-- **Database**: PostgreSQL handles persistent storage for application records and logs every user query for traceability.
-- **Frontend**: A minimal vanilla HTML/JS interface with an embedded chat widget.
+## 🛠️ How it Works (For Beginners)
 
-## RAG Pipeline
+This project uses a technique called **RAG (Retrieval-Augmented Generation)**. 
 
-1. **Ingestion**: Documents in the `documents/` folder are processed. CSV rows are converted into structured text strings (e.g., "Program: Computer Science. Deadline: Dec 1").
-2. **Chunking**: `RecursiveCharacterTextSplitter` ensures contexts fits within prompt limits while maintaining semantic meaning.
-3. **Retrieval**: FAISS provides high-performance similarity search to find the top 3 most relevant context snippets.
-4. **Grounding**: The LLM is strictly instructed to only use the provided context. Any out-of-scope question is met with a standard refusal.
+Imagine you have a very smart assistant (the Large Language Model, or LLM) who knows a lot about the world but doesn't know anything about *your* specific university. 
+1.  **Ingestion**: We take your university documents (PDFs, CSVs) and "teach" them to the assistant by storing them in a searchable database.
+2.  **Retrieval**: When a student asks a question like "What is the fee for BTech AI?", the system searches your documents for the answer.
+3.  **Generation**: The system gives the relevant text to the LLM, which then writes a polite, natural-sounding response back to the student.
 
-## Setup Instructions
+---
+
+## 🚀 Quick Start Guide
+
+Follow these steps to get the project running on your local machine.
 
 ### 1. Prerequisites
-- Python 3.10+
-- PostgreSQL instance running
+- **Python 3.10 or higher** installed on your system.
+- A **Google Gemini API Key** (it's free!). Get it at [Google AI Studio](https://aistudio.google.com/app/apikey).
 
-### 2. Environment Variables
-Copy `.env.example` to `.env` and fill in:
-- `GEMINI_API_KEY`: Your Google Gemini API key.
-- `DATABASE_URL`: PostgreSQL connection string (`postgresql://user:pass@host:port/db`).
+### 2. Setup the Environment
+First, clone the repository and navigate into the folder:
 
-### 3. Installation
+```bash
+# Create a virtual environment to keep dependencies organized
+python3 -m venv venv
+
+# Activate the virtual environment
+# On Linux/Mac:
+source venv/bin/activate
+# On Windows:
+# venv\Scripts\activate
+```
+
+### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Data Ingestion
-Place your `prospectus.pdf`, `admission_rules.pdf`, and `programs.csv` in the `documents/` folder, then run:
+### 4. Configure Environment Variables
+Copy the template file to create your own configuration:
 ```bash
+cp .env.example .env
+```
+Open the `.env` file and paste your **GEMINI_API_KEY**. By default, the project uses **SQLite** (a simple file-based database), so you don't need to install PostgreSQL to get started!
+
+### 5. Ingest Your Data
+Before the chatbot can answer questions, it needs to "read" your documents. Place your PDF or CSV files in the `documents/` folder.
+```bash
+# This script processes your documents and creates the vector database
 export PYTHONPATH=$PYTHONPATH:.
-python backend/rag/ingestion.py
+python3 backend/rag/ingestion.py
 ```
 
-### 5. Running Locally
+### 6. Launch the App!
+Start the backend server:
 ```bash
 uvicorn backend.main:app --reload
 ```
-Access the portal at `http://127.0.0.1:8000/`.
+Now, open your browser and go to: **[http://localhost:8000](http://localhost:8000)**
 
-## API Endpoints
-- `POST /api/chat/`: Grounded RAG chat + direct application status lookup.
-- `GET /api/status/{app_id}`: Retrieve application status.
-- `PUT /api/status/update-status`: Update application status via JSON body.
+---
+
+## 📂 Project Structure
+
+- `backend/`: The logic of the app (FastAPI routes, RAG pipeline, Database models).
+- `frontend/`: Static HTML/CSS files for the website and chat widget.
+- `documents/`: Your source data (PDFs/CSVs) that the AI reads.
+- `vector_storage/`: Where the AI's "brain" (processed documents) is saved.
+
+---
+
+## 💡 Changing Databases (Intermediate)
+If you want to move from **SQLite** (local file) to **PostgreSQL** (production):
+1.  Install PostgreSQL on your machine.
+2.  Update the `DATABASE_URL` in your `.env` file.
+3.  The app will automatically create the required tables on the next startup!
+
+---
+
+## 📝 API Endpoints
+- `POST /api/chat/`: Send a message to the AI Assistant.
+- `GET /api/status/{app_id}`: Check the status of a specific application (e.g., A1001).
